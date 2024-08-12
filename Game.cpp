@@ -41,6 +41,7 @@ Game::Game(Color playerColor) {
 	}
 
 }
+Game::~Game(){return;}
 
 void Game::printBoard() {
 	for (int i = 0; i < BOARD_ROWS; i++) {
