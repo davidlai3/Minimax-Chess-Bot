@@ -3,6 +3,8 @@
 
 #include <vector>
 #define pos std::pair<int, int>
+#define row first
+#define col second
 
 class Piece {
 	public:
@@ -12,7 +14,7 @@ class Piece {
 			BLACK
 		};
 
-		virtual std::vector<pos> getMoves() = 0;
+		virtual std::vector<pos> getMoves(Piece (&board)[8][8]);
 		void setNewPosition(pos newPosition);
 		void setColor(Color color);
 
