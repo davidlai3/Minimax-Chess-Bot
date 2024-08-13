@@ -14,10 +14,14 @@ class Piece {
 
 		virtual std::vector<pos> getMoves() = 0;
 		void setNewPosition(pos newPosition);
+		void setColor(Color color);
+
+		pos getCurrentPosition();
+		Color getColor();
 	
 	private:
-		Color color;
-		pos currentPosition;
+		Color _color;
+		pos _currentPosition;
 		
 		
 };
