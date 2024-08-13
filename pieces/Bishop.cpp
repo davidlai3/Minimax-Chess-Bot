@@ -8,10 +8,10 @@ Bishop::Bishop(pos startingPosition, Color pieceColor)
 
 }
 
-std::vector<pos> Bishop::getMoves(Piece (&board)[8][8])
+std::vector<pos> Bishop::getMoves(Piece (&board)[8][8], pos startPosition)
 {
     std::vector<pos> res;
-	pos currentPos = getCurrentPosition();
+	pos currentPos = startPosition;
 	Color currentColor = getColor();
 
     std::vector<std::pair<int, int>> directions = {
