@@ -15,6 +15,10 @@ std::vector<pos> Rook::getMoves(Piece (&board)[8][8]) {
 		if (board[i][currentPos.col].getColor() == currentColor) {
 			break;
 		}
+		else if (board[i][currentPos.col].getColor() != Piece::EMPTY) {
+			res.push_back(std::make_pair(i, currentPos.col));
+			break;
+		}
 		else {
 			res.push_back(std::make_pair(i, currentPos.col));
 		}
@@ -25,7 +29,7 @@ std::vector<pos> Rook::getMoves(Piece (&board)[8][8]) {
 			break;
 		}
 		else {
-			res.push_back(std::make_pair(i, currentPos.col));
+			res.push_back(std::make_pair(currentPos.row, i));
 		}
 	}
 

@@ -11,7 +11,8 @@ class Piece {
 
 		enum Color {
 			WHITE,
-			BLACK
+			BLACK,
+			EMPTY
 		};
 
 		virtual std::vector<pos> getMoves(Piece (&board)[8][8]);

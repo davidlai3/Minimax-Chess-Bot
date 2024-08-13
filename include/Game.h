@@ -9,7 +9,8 @@ class Game {
 
 		enum Color {
 			WHITE,
-			BLACK
+			BLACK,
+			EMPTY
 		};
 
 		Game(Color playerColor);
