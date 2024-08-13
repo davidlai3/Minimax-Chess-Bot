@@ -5,9 +5,9 @@ Rook::Rook(pos startingPosition, Color pieceColor) {
 	setColor(pieceColor);
 }
 
-std::vector<pos> Rook::getMoves(Piece (&board)[8][8]) {
+std::vector<pos> Rook::getMoves(Piece (&board)[8][8], pos startingPosition) {
 	std::vector<pos> res;
-	pos currentPos = getCurrentPosition();
+	pos currentPos = startingPosition;
 	Color currentColor = getColor();
 
 	// TODO: Check if move creates discovered check
