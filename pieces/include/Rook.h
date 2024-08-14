@@ -8,7 +8,7 @@ class Rook : public Piece {
     public:
 
         Rook(pos startingPosition, Color pieceColor);
-        std::vector<pos> getMoves(Piece (&board)[8][8], pos startingPosition) override;
+        std::vector<pos> getMoves(Piece (&board)[8][8]) override;
 
 };
 

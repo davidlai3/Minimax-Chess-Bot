@@ -5,9 +5,9 @@ Knight::Knight(pos startingPosition, Color pieceColor) {
 	setColor(pieceColor);
 }
 
-std::vector<pos> Knight::getMoves(Piece (&board)[8][8], pos startingPosition) {
+std::vector<pos> Knight::getMoves(Piece (&board)[8][8]) {
 	std::vector<pos> res;
-	pos currentPos = startingPosition;
+	pos currentPos = getCurrentPosition();
 
 	Color currentColor = getColor();
 

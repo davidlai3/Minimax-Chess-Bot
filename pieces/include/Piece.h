@@ -15,7 +15,7 @@ class Piece {
 			EMPTY
 		};
 
-		virtual std::vector<pos> getMoves(Piece (&board)[8][8], pos startPosition);
+		virtual std::vector<pos> getMoves(Piece (&board)[8][8]);
 		void setNewPosition(pos newPosition);
 		void setColor(Color color);
 
