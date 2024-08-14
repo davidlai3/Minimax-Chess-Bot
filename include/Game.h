@@ -10,16 +10,16 @@ class Game {
 		enum Color {
 			WHITE,
 			BLACK,
-			EMPTY
 		};
 
 		Game(Color playerColor);
 		~Game();
 
-		void printBoard();
+		void printBoard(bool invert=false);
 
 	private:
 		char board[BOARD_ROWS][BOARD_COLS];
+		Color _playerColor;
 
 };
 
