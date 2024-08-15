@@ -18,8 +18,9 @@ class Game {
 		~Game();
 
 		bool makeMove(int srcRow, int srcCol, int dstRow, int dstCol);
-
 		std::set<pos> getMoves(int row, int col);
+
+		void printBoard(bool invert=false);
 
 
 	private:

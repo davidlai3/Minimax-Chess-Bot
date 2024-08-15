@@ -43,7 +43,7 @@ void Game::printBoard(bool invert) {
 	if (invert && printColor == WHITE) {
 		printColor = BLACK;
 	}
-	else if (invert && printColor == BLACK) {
+	else if (invert && printColor == BLACK ) {
 		printColor = WHITE;
 	}
 
