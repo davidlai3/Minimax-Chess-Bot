@@ -3,8 +3,8 @@
 
 #include <set>
 #define pos std::pair<int, int>
-#define row first
-#define col second
+// #define row first
+// #define col second
 
 class Piece {
 	public:
@@ -15,7 +15,7 @@ class Piece {
 		};
 
 		static PieceColor getColor(int row, int col, char (&board)[8][8]);
-		static std::set<pos> getMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getUnfilteredMoves(int row, int col, char (&board)[8][8]);
 		bool checkAttack(int row, int col, char(&board)[8][8]);
 	
 	private:

@@ -30,10 +30,58 @@ Game::Game(Color playerColor) {
 }
 Game::~Game(){return;}
 
+std::set<pos> Game::getFilteredMoves(int row, int col) {
+	std::set<pos> unfilteredMoves = Piece::getUnfilteredMoves(row, col, board);
+	std::set<pos> filteredMoves;
+	std::set<pos>::iterator itr;
 
-std::set<pos> Game::getMoves(int row, int col) {
-	std::set<pos> unrefined = Piece::getMoves(row, col, board);
+	char pieceToMove = board[row][col];
+	Piece::PieceColor kingColor = Piece::getColor(row, col, board);
+
+	// getEnPassant --> add to set
+	// getCastle --> add to set
+
+	for (itr = unfilteredMoves.begin(); itr != unfilteredMoves.end(); itr++)
+	{ 
+		pos moveToCheck = *itr;
+		
+		// Do the move
+		board[row][col] = '.';
+		char pieceCaptured = board[moveToCheck.first][moveToCheck.second];
+		board[moveToCheck.first][moveToCheck.second] = pieceToMove;
+
+		// check if there is a discovered check 
+		if ( !checkIfUnderAttack( kingColor ) )
+			filteredMoves.insert( moveToCheck );
+		
+		// revert the game board to original state
+		board[row][col] = pieceToMove;
+		board[moveToCheck.first][moveToCheck.second] = pieceCaptured;
+
+	}
+
+	return filteredMoves;
+}
+
+
+bool Game::checkIfUnderAttack(Piece::PieceColor kingColor) {
+
+	assert (kingColor != Piece::PieceColor::EMPTY);
+	pos kingPosition = (kingColor == WHITE) ? _whiteKing : _blackKing; 
 	
+	for( int row=0; row < BOARD_ROWS; row++ ){
+		for( int col=0; col < BOARD_COLS; col++){
+			Piece::PieceColor pieceColor = Piece::getColor( row, col, board );
+			if (kingColor != pieceColor){
+				auto positionsAttacked = Piece::getUnfilteredMoves(row, col, board);
+				if (positionsAttacked.count(kingPosition) >= 1)
+					return true;
+			}
+		}
+	}
+
+	return false;
+
 }
 
 
@@ -43,7 +91,7 @@ void Game::printBoard(bool invert) {
 	if (invert && printColor == WHITE) {
 		printColor = BLACK;
 	}
-	else if (invert && printColor == BLACK ) {
+	else if (invert && printColor == BLACK) {
 		printColor = WHITE;
 	}
 

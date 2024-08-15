@@ -11,7 +11,7 @@ Piece::PieceColor Piece::getColor(int row, int col, char (&board)[8][8]) {
 
 // returns possible moves for each position
 // DOES NOT CHECK FOR DISCOVERED CHECK
-std::set<pos> Piece::getMoves(int row, int col, char (&board)[8][8]) {
+std::set<pos> Piece::getUnfilteredMoves(int row, int col, char (&board)[8][8]) {
 
 	switch (board[row][col]) {
 		case 'P':
@@ -38,12 +38,7 @@ std::set<pos> Piece::getMoves(int row, int col, char (&board)[8][8]) {
 
 }
 
-bool Piece::checkAttack(int row, int col, char (&board)[8][8]) {
-	pos checkPos = std::make_pair(row, col);
-	std::set rookMoves = getRookMoves(row, col, board);
-	std::set knightMoves = getKnightMoves(row, col, board);
-	std::set bishMoves = getBishopMoves(row, col, board);
-}
+
 
 std::set<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);

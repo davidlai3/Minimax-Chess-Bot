@@ -18,7 +18,7 @@ class Game {
 		~Game();
 
 		bool makeMove(int srcRow, int srcCol, int dstRow, int dstCol);
-		std::set<pos> getMoves(int row, int col);
+		std::set<pos> getFilteredMoves(int row, int col);
 
 		void printBoard(bool invert=false);
 
@@ -29,7 +29,7 @@ class Game {
 		pos _whiteKing;
 		pos _blackKing;
 
-		bool checkAttack(Color king);
+		bool checkIfUnderAttack(Piece::PieceColor king);
 
 };
 
