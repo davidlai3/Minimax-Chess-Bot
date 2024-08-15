@@ -1,8 +1,10 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include <vector>
+#include <set>
 #define pos std::pair<int, int>
+#define row first
+#define col second
 
 class Piece {
 	public:
@@ -13,16 +15,16 @@ class Piece {
 		};
 
 		static PieceColor getColor(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getMoves(int row, int col, char (&board)[8][8]);
+		bool checkAttack(int row, int col, char(&board)[8][8]);
 	
 	private:
-		static std::vector<pos> getPawnMoves(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getRookMoves(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getKnightMoves(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getBishopMoves(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getQueenMoves(int row, int col, char (&board)[8][8]);
-		static std::vector<pos> getKingMoves(int row, int col, char (&board)[8][8]);
-		static bool checkDiscover(int srcRow, int srcCol, int dstRow, int dstCol, int (&board)[8][8]);
+		static std::set<pos> getPawnMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getRookMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getKnightMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getBishopMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getQueenMoves(int row, int col, char (&board)[8][8]);
+		static std::set<pos> getKingMoves(int row, int col, char (&board)[8][8]);
 };
 
 #endif

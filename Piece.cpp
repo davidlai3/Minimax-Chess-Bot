@@ -9,7 +9,9 @@ Piece::PieceColor Piece::getColor(int row, int col, char (&board)[8][8]) {
 	else return BLACK;
 }
 
-std::vector<pos> Piece::getMoves(int row, int col, char (&board)[8][8]) {
+// returns possible moves for each position
+// DOES NOT CHECK FOR DISCOVERED CHECK
+std::set<pos> Piece::getMoves(int row, int col, char (&board)[8][8]) {
 
 	switch (board[row][col]) {
 		case 'P':
@@ -31,41 +33,48 @@ std::vector<pos> Piece::getMoves(int row, int col, char (&board)[8][8]) {
 		case 'k':
 			return Piece::getKingMoves(row, col, board);
 		default:
-			return std::vector<pos>();
+			return std::set<pos>();
 	}
 
 }
 
-std::vector<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
+bool Piece::checkAttack(int row, int col, char (&board)[8][8]) {
+	pos checkPos = std::make_pair(row, col);
+	std::set rookMoves = getRookMoves(row, col, board);
+	std::set knightMoves = getKnightMoves(row, col, board);
+	std::set bishMoves = getBishopMoves(row, col, board);
+}
+
+std::set<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
 
-	std::vector<pos> ans;
+	std::set<pos> ans;
 
 	int step = (curColor == WHITE ? -1 : 1);
 
 	// move forward one
 	if (row + step >= 0 && row + step < 8) {
 		if (getColor(row + step, col, board) == EMPTY) {
-			ans.push_back(std::make_pair(row + step, col));
+			ans.insert(std::make_pair(row + step, col));
 		}
 	} 
 
 	// move foward two
 	if (row == 1 && curColor == BLACK || row == 6 && curColor == WHITE) {
 		if (getColor(row + 2*step, col, board) == EMPTY) {
-			ans.push_back(std::make_pair(row + 2*step, col));
+			ans.insert(std::make_pair(row + 2*step, col));
 		}
 	}
 
 	// capture
 	if (row + step >= 0 && row + step < 8) {
 		if (col - 1 >= 0 && getColor(row + step, col - 1, board) == oppColor) {
-			ans.push_back(std::make_pair(row + step, col - 1));
+			ans.insert(std::make_pair(row + step, col - 1));
 		}
 		if (col + 1 < 8 && getColor(row + step, col + 1, board) == oppColor) {
-			ans.push_back(std::make_pair(row + step, col + 1));
+			ans.insert(std::make_pair(row + step, col + 1));
 		}
 	}
 
@@ -74,23 +83,23 @@ std::vector<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
 	return ans;
 }
 
-std::vector<pos> Piece::getRookMoves(int row, int col, char (&board)[8][8]) {
+std::set<pos> Piece::getRookMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
 
-	std::vector<pos> ans;
+	std::set<pos> ans;
 
 	for (int i = row; i < 8; i++) {
 		if (getColor(i, col, board) == curColor) {
 			break;
 		}
 		else if (getColor(i, col, board) == oppColor) {
-			ans.push_back(std::make_pair(i, col));
+			ans.insert(std::make_pair(i, col));
 			break;
 		}
 		else {
-			ans.push_back(std::make_pair(i, col));
+			ans.insert(std::make_pair(i, col));
 		}
 	}
 
@@ -99,22 +108,22 @@ std::vector<pos> Piece::getRookMoves(int row, int col, char (&board)[8][8]) {
 			break;
 		}
 		else if (getColor(i, col, board) == oppColor) {
-			ans.push_back(std::make_pair(row, i));
+			ans.insert(std::make_pair(row, i));
 			break;
 		}
 		else {
-			ans.push_back(std::make_pair(row, i));
+			ans.insert(std::make_pair(row, i));
 		}
 	}
 
 	return ans;
 }
 
-std::vector<pos> Piece::getKnightMoves(int row, int col, char (&board)[8][8]) {
+std::set<pos> Piece::getKnightMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 
-	std::vector<pos> ans;
+	std::set<pos> ans;
 
 	int dx[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
 	int dy[8] = {-1, -2, -2, -1, 1, 2, 2, 1};
@@ -131,19 +140,19 @@ std::vector<pos> Piece::getKnightMoves(int row, int col, char (&board)[8][8]) {
 			continue;
 		}
 		else {
-			ans.push_back(std::make_pair(newRow, newCol));
+			ans.insert(std::make_pair(newRow, newCol));
 		}
 	}
 
 	return ans;
 }
 
-std::vector<pos> Piece::getBishopMoves(int row, int col, char (&board)[8][8]) {
+std::set<pos> Piece::getBishopMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
 
-	std::vector<pos> ans;
+	std::set<pos> ans;
 
 	int dx[4] = {1, -1, 1, -1};
 	int dy[4] = {1, -1, -1, 1};
@@ -163,7 +172,7 @@ std::vector<pos> Piece::getBishopMoves(int row, int col, char (&board)[8][8]) {
                 break;
             }
 
-            ans.push_back(std::make_pair(newRow, newCol));
+            ans.insert(std::make_pair(newRow, newCol));
 
             if (getColor(newRow, newCol, board) == oppColor) {
                 break;
@@ -177,24 +186,43 @@ std::vector<pos> Piece::getBishopMoves(int row, int col, char (&board)[8][8]) {
 	return ans;
 }
 
-std::vector<pos> Piece::getQueenMoves(int row, int col, char (&board)[8][8]) {
-	std::vector<pos> ans;
+std::set<pos> Piece::getQueenMoves(int row, int col, char (&board)[8][8]) {
 
-	std::vector<pos> ansRook = getRookMoves(row, col, board);
-	std::vector<pos> ansBish = getBishopMoves(row, col, board);
+	std::set<pos> ansRook = getRookMoves(row, col, board);
+	std::set<pos> ansBish = getBishopMoves(row, col, board);
 
-	ans.reserve(ansRook.size() + ansBish.size());
-	ans.insert(ans.end(), ansRook.begin(), ansRook.end());
-	ans.insert(ans.end(), ansBish.begin(), ansBish.end());
+	std::set<pos> ans;
+
+	ans.insert(ansRook.begin(), ansRook.end());
+	ans.insert(ansBish.begin(), ansBish.end());
 
 	return ans;
 }
 
-std::vector<pos> Piece::getKingMoves(int row, int col, char (&board)[8][8]) {
+std::set<pos> Piece::getKingMoves(int row, int col, char (&board)[8][8]) {
 	PieceColor curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 
-	std::vector<pos> ans;
+	std::set<pos> ans;
+
+	int dx[8] = {1, 1, 1, 0, 0, -1, -1, -1};
+	int dy[8] = {1, 0, -1, 1, -1, 1, 0, -1};
+
+	for (int i = 0; i < 8; i++) {
+		int newRow = row + dx[i];
+		int newCol = row + dy[i];
+
+		if (newRow < 0 || newRow >= 8) continue;
+		if (newCol < 0 || newCol >= 8) continue;
+
+		if (getColor(row + dx[i], col + dy[i], board) == curColor) {
+			continue;
+		}
+
+		ans.insert(row + dx[i], col + dy[i]);
+
+	}
 
 	return ans;
 }
+

@@ -30,6 +30,13 @@ Game::Game(Color playerColor) {
 }
 Game::~Game(){return;}
 
+
+std::set<pos> Game::getMoves(int row, int col) {
+	std::set<pos> unrefined = Piece::getMoves(row, col, board);
+	
+}
+
+
 void Game::printBoard(bool invert) {
 
 	Color printColor = _playerColor;

@@ -1,8 +1,10 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "Piece.h"
 #define BOARD_ROWS 8
 #define BOARD_COLS 8
+
 
 class Game {
 	public:
@@ -15,11 +17,18 @@ class Game {
 		Game(Color playerColor);
 		~Game();
 
-		void printBoard(bool invert=false);
+		bool makeMove(int srcRow, int srcCol, int dstRow, int dstCol);
+
+		std::set<pos> getMoves(int row, int col);
+
 
 	private:
 		char board[BOARD_ROWS][BOARD_COLS];
 		Color _playerColor;
+		pos _whiteKing;
+		pos _blackKing;
+
+		bool checkAttack(Color king);
 
 };
 
