@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cassert>
 #include <iostream>
 #include "include/Game.h"
 
@@ -66,8 +67,8 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 
 bool Game::checkIfUnderAttack(Piece::PieceColor kingColor) {
 
-	assert (kingColor != Piece::PieceColor::EMPTY);
-	pos kingPosition = (kingColor == WHITE) ? _whiteKing : _blackKing; 
+	assert (kingColor != Piece::EMPTY);
+	pos kingPosition = (kingColor == Piece::WHITE) ? _whiteKing : _blackKing; 
 	
 	for( int row=0; row < BOARD_ROWS; row++ ){
 		for( int col=0; col < BOARD_COLS; col++){
