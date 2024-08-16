@@ -214,7 +214,7 @@ std::set<pos> Piece::getKingMoves(int row, int col, char (&board)[8][8]) {
 			continue;
 		}
 
-		ans.insert(row + dx[i], col + dy[i]);
+		ans.insert(std::make_pair(row + dx[i], col + dy[i]));
 
 	}
 
