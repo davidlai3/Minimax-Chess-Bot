@@ -4,15 +4,18 @@
 using namespace std;
 
 int main() {
-	Game game( Game::WHITE );
-	Game game2( Game::BLACK );
+	Game game( Piece::WHITE );
 
-	game.printBoard();
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	game2.printBoard();
+	while (!game.isCheckmate()) {
+		game.printBoard();
+		if (game.playerMove()) {
+			cout << "move successful" << endl;
+		}
+		else {
+			cout << "move failed" << endl;
+		}
+	}
+
 
 	return 0;
 }

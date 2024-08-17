@@ -3,10 +3,10 @@
 #include <cctype>
 #include <utility>
 
-Piece::PieceColor Piece::getColor(int row, int col, char (&board)[8][8]) {
+Piece::Color Piece::getColor(int row, int col, char (&board)[8][8]) {
 	if (board[row][col] == '.') return EMPTY;
-	else if (std::islower(board[row][col])) return WHITE;
-	else return BLACK;
+	else if (std::islower(board[row][col])) return BLACK;
+	else return WHITE;
 }
 
 // returns possible moves for each position
@@ -41,9 +41,9 @@ std::set<pos> Piece::getUnfilteredMoves(int row, int col, char (&board)[8][8]) {
 
 
 std::set<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
-	PieceColor curColor = getColor(row, col, board);
+	Color curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
-	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
+	Color oppColor = (curColor == WHITE ? BLACK : WHITE);
 
 	std::set<pos> ans;
 
@@ -79,9 +79,9 @@ std::set<pos> Piece::getPawnMoves(int row, int col, char (&board)[8][8]) {
 }
 
 std::set<pos> Piece::getRookMoves(int row, int col, char (&board)[8][8]) {
-	PieceColor curColor = getColor(row, col, board);
+	Color curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
-	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
+	Color oppColor = (curColor == WHITE ? BLACK : WHITE);
 
 	std::set<pos> ans;
 
@@ -115,7 +115,7 @@ std::set<pos> Piece::getRookMoves(int row, int col, char (&board)[8][8]) {
 }
 
 std::set<pos> Piece::getKnightMoves(int row, int col, char (&board)[8][8]) {
-	PieceColor curColor = getColor(row, col, board);
+	Color curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 
 	std::set<pos> ans;
@@ -143,9 +143,9 @@ std::set<pos> Piece::getKnightMoves(int row, int col, char (&board)[8][8]) {
 }
 
 std::set<pos> Piece::getBishopMoves(int row, int col, char (&board)[8][8]) {
-	PieceColor curColor = getColor(row, col, board);
+	Color curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
-	PieceColor oppColor = (curColor == WHITE ? BLACK : WHITE);
+	Color oppColor = (curColor == WHITE ? BLACK : WHITE);
 
 	std::set<pos> ans;
 
@@ -195,7 +195,7 @@ std::set<pos> Piece::getQueenMoves(int row, int col, char (&board)[8][8]) {
 }
 
 std::set<pos> Piece::getKingMoves(int row, int col, char (&board)[8][8]) {
-	PieceColor curColor = getColor(row, col, board);
+	Color curColor = getColor(row, col, board);
 	assert(curColor != EMPTY);
 
 	std::set<pos> ans;

@@ -8,13 +8,13 @@
 
 class Piece {
 	public:
-		enum PieceColor {
+		enum Color {
 			WHITE,
 			BLACK,
 			EMPTY
 		};
 
-		static PieceColor getColor(int row, int col, char (&board)[8][8]);
+		static Color getColor(int row, int col, char (&board)[8][8]);
 		static std::set<pos> getUnfilteredMoves(int row, int col, char (&board)[8][8]);
 		bool checkAttack(int row, int col, char(&board)[8][8]);
 	
