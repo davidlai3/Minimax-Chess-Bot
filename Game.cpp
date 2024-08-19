@@ -215,7 +215,47 @@ bool Game::checkCastleKingside(Piece::Color kingColor){
 }
 bool Game::checkCastleQueenside(Piece::Color kingColor){
 
-	return false;
+	assert (kingColor != Piece::EMPTY);
+
+	if(kingColor == Piece::BLACK){
+		// if the king or the rook has already moved, we can't castle
+		if (_blackKingMoved || _blackQueensideRookMoved)
+			return false; 
+
+		// check if the path between rook and king is empty
+		if (Piece::getColor(0, 1, board) != Piece::EMPTY 
+			&& Piece::getColor(0, 2, board) != Piece::EMPTY 
+			&& Piece::getColor(0,3,board) != Piece::EMPTY)
+			return false;
+		
+		// check if the positions are under attack
+		// NOTE: I don't think it matters if (0,1) is under attack according to the rules
+		// King must not travel through a check or land onto a check
+		// 0, 1 is unaffected i believe
+
+		pos posToCheck1 = std::make_pair(0, 2);
+		pos posToCheck2 = std::make_pair(0, 3);
+
+
+		return checkPosUnderAttack(posToCheck1, Piece::BLACK) && checkPosUnderAttack(posToCheck2, Piece::BLACK);
+	} 
+
+	// else kingColor must be white
+
+	// if the king or the rook has already moved, we can't castle
+	if (_whiteKingMoved || _whiteQueensideRookMoved)
+		return false; 
+
+	// check if the path between rook and king is empty
+	if (Piece::getColor(7, 1, board) != Piece::EMPTY && Piece::getColor(7, 2, board) != Piece::EMPTY && Piece::getColor(7, 3, board) != Piece::EMPTY)
+		return false;
+	
+	// check if the positions are under attack
+	pos posToCheck1 = std::make_pair(7, 2);
+	pos posToCheck2 = std::make_pair(7, 3);
+
+	return checkPosUnderAttack(posToCheck1, Piece::WHITE) && checkPosUnderAttack(posToCheck2, Piece::WHITE);
+
 }
 
 
