@@ -76,7 +76,7 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 		board[moveToCheck.first][moveToCheck.second] = pieceToMove;
 
 		// check if there is a discovered check 
-		if ( !checkIfUnderAttack( kingColor ) )
+		if ( !checkKingUnderAttack( kingColor ) )
 			filteredMoves.insert( moveToCheck );
 		
 		// revert the game board to original state
@@ -91,7 +91,7 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 
 bool Game::isCheckmate() {
 	pos kingPosition = (_colorToMove == Piece::WHITE ? _whiteKing : _blackKing);
-	if (!checkIfUnderAttack(_colorToMove)) return false;
+	if (!checkKingUnderAttack(_colorToMove)) return false;
 	for (int row = 0; row < BOARD_ROWS; row++) {
 		for (int col = 0; col < BOARD_COLS; col++) {
 
@@ -109,7 +109,7 @@ bool Game::isCheckmate() {
 				board[moveToCheck.first][moveToCheck.second] = pieceToMove;
 
 				// check if there is a discovered check 
-				if (!checkIfUnderAttack(_colorToMove)) return false;
+				if (!checkKingUnderAttack(_colorToMove)) return false;
 				
 				// revert the game board to original state
 				board[row][col] = pieceToMove;
@@ -152,24 +152,72 @@ void Game::printBoard(bool invert) {
 
 // Private methods:
 
-bool Game::checkIfUnderAttack(Piece::Color kingColor) {
+bool Game::checkKingUnderAttack(Piece::Color kingColor) {
 
 	assert (kingColor != Piece::EMPTY);
 	pos kingPosition = (kingColor == Piece::WHITE) ? _whiteKing : _blackKing; 
+
+	checkPosUnderAttack(kingPosition, kingColor);
+}
+
+bool Game::checkPosUnderAttack(pos position, Piece::Color playerColor){
+	assert (playerColor != Piece::EMPTY);
 
 	for (int row=0; row < BOARD_ROWS; row++) {
 		for (int col=0; col < BOARD_COLS; col++) {
 
 			Piece::Color pieceColor = Piece::getColor( row, col, board );
 
-			if (kingColor == pieceColor) continue;
+			if (playerColor == pieceColor) continue;
 			auto positionsAttacked = Piece::getUnfilteredMoves(row, col, board);
-			if (positionsAttacked.count(kingPosition) >= 1) return true;
+			if (positionsAttacked.count(position) >= 1) return true;
 
 		}
 	}
 	return false;
 }
+
+bool Game::checkCastleKingside(Piece::Color kingColor){
+	assert (kingColor != Piece::EMPTY);
+
+	if(kingColor == Piece::BLACK){
+		// if the king or the rook has already moved, we can't castle
+		if (_blackKingMoved || _blackKingsideRookMoved)
+			return false; 
+
+		// check if the path between rook and king is empty
+		if (Piece::getColor(0, 6, board) != Piece::EMPTY && Piece::getColor(0, 7, board) != Piece::EMPTY)
+			return false;
+		
+		// check if the positions are under attack
+		pos posToCheck1 = std::make_pair(0, 6);
+		pos posToCheck2 = std::make_pair(0, 7);
+
+		return checkPosUnderAttack(posToCheck1, Piece::BLACK) && checkPosUnderAttack(posToCheck2, Piece::BLACK);
+	} 
+
+	// else kingColor must be white
+
+	// if the king or the rook has already moved, we can't castle
+	if (_whiteKingMoved || _whiteKingsideRookMoved)
+		return false; 
+
+	// check if the path between rook and king is empty
+	if (Piece::getColor(7, 6, board) != Piece::EMPTY && Piece::getColor(7, 7, board) != Piece::EMPTY)
+		return false;
+	
+	// check if the positions are under attack
+	pos posToCheck1 = std::make_pair(7, 6);
+	pos posToCheck2 = std::make_pair(7, 7);
+
+	return checkPosUnderAttack(posToCheck1, Piece::WHITE) && checkPosUnderAttack(posToCheck2, Piece::WHITE);
+
+}
+bool Game::checkCastleQueenside(Piece::Color kingColor){
+
+	return false;
+}
+
 
 std::pair<pos, pos> Game::parseMove(std::string move) {
 	// i think pawn promotions will have to be length 5

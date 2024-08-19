@@ -25,10 +25,24 @@ class Game {
 		char board[BOARD_ROWS][BOARD_COLS];
 		Piece::Color _colorToMove = Piece::WHITE;
 		Piece::Color _playerColor;
+
 		pos _whiteKing;
 		pos _blackKing;
 
-		bool checkIfUnderAttack(Piece::Color king);
+		bool _whiteKingMoved;
+		bool _whiteKingsideRookMoved;
+		bool _whiteQueensideRookMoved;
+
+		bool _blackKingMoved;
+		bool _blackKingsideRookMoved;
+		bool _blackQueensideRookMoved;
+
+		bool checkKingUnderAttack(Piece::Color king);
+		bool checkPosUnderAttack(pos position, Piece::Color pieceColor);
+
+		bool checkCastleKingside(Piece::Color kingColor);
+		bool checkCastleQueenside(Piece::Color kingColor);
+
 		std::pair<pos, pos> parseMove(std::string move);
 
 };
