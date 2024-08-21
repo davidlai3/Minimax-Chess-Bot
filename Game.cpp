@@ -47,10 +47,20 @@ bool Game::makeMove(pos srcPos, pos dstPos) {
 	std::set<pos> possibleMoves = getFilteredMoves(srcRow, srcCol);
 	if (possibleMoves.count(std::make_pair(dstRow, dstCol)) == 0) return false;
 	
+	checkPawnMove(srcPos, dstPos); // update array if pawn moves 2
+	
+	// check for en passant and capture
+	if (board[srcRow][srcCol] == 'p' || board[srcRow][srcCol] == 'P') {
+		if (board[dstRow][dstCol] == '.' && srcCol != dstCol) {
+			board[srcRow][dstCol] = '.';
+		}
+	}
+
 	board[dstRow][dstCol] = board[srcRow][srcCol];
 	board[srcRow][srcCol] = '.';
 
 	_colorToMove = (_colorToMove == Piece::WHITE ? Piece::BLACK : Piece::WHITE);
+	_moveCounter++;
 
 	return true;
 }
@@ -66,8 +76,7 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 	// getEnPassant --> add to set
 	// getCastle --> add to set
 
-	for (itr = unfilteredMoves.begin(); itr != unfilteredMoves.end(); itr++)
-	{ 
+	for (itr = unfilteredMoves.begin(); itr != unfilteredMoves.end(); itr++) { 
 		pos moveToCheck = *itr;
 		
 		// Do the move
@@ -85,6 +94,11 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 
 	}
 
+	pos enPassant = checkEnPassant(row, col);
+	if (enPassant.first != -1 && enPassant.second != -1) {
+		filteredMoves.insert(enPassant);
+	}
+
 	return filteredMoves;
 }
 
@@ -92,6 +106,7 @@ std::set<pos> Game::getFilteredMoves(int row, int col) {
 bool Game::isCheckmate() {
 	pos kingPosition = (_colorToMove == Piece::WHITE ? _whiteKing : _blackKing);
 	if (!checkKingUnderAttack(_colorToMove)) return false;
+	if (getFilteredMoves(kingPosition.first, kingPosition.second).size() > 0) return false;
 	for (int row = 0; row < BOARD_ROWS; row++) {
 		for (int col = 0; col < BOARD_COLS; col++) {
 
@@ -153,11 +168,10 @@ void Game::printBoard(bool invert) {
 // Private methods:
 
 bool Game::checkKingUnderAttack(Piece::Color kingColor) {
-
 	assert (kingColor != Piece::EMPTY);
 	pos kingPosition = (kingColor == Piece::WHITE) ? _whiteKing : _blackKing; 
 
-	checkPosUnderAttack(kingPosition, kingColor);
+	return checkPosUnderAttack(kingPosition, kingColor);
 }
 
 bool Game::checkPosUnderAttack(pos position, Piece::Color playerColor){
@@ -255,8 +269,49 @@ bool Game::checkCastleQueenside(Piece::Color kingColor){
 	pos posToCheck2 = std::make_pair(7, 3);
 
 	return checkPosUnderAttack(posToCheck1, Piece::WHITE) && checkPosUnderAttack(posToCheck2, Piece::WHITE);
-
 }
+
+void Game::checkPawnMove(pos src, pos dst) {
+	if (tolower(board[src.first][src.second]) != 'p') return;
+	if (abs(dst.second - src.second) != 2) return;
+	Piece::Color pawnColor = Piece::getColor(src.first, src.second, board);
+	assert(pawnColor != Piece::EMPTY);
+
+	if (pawnColor == Piece::BLACK) _blackPawns[src.second] = _moveCounter;
+	if (pawnColor == Piece::WHITE) _whitePawns[src.second] = _moveCounter;
+}
+
+pos Game::checkEnPassant(int row, int col) {
+	if (board[row][col] != 'p' && board[row][col] != 'P') {
+		return std::make_pair(-1, -1);
+	}
+
+	Piece::Color pawnColor = Piece::getColor(row, col, board);
+	char oppPiece = (pawnColor == Piece::BLACK ? 'P' : 'p');
+	int step = (pawnColor == Piece::BLACK ? 1 : -1);
+
+	if (pawnColor == Piece::BLACK && row != 4) return std::make_pair(-1, -1);
+	if (pawnColor == Piece::WHITE && row != 3) return std::make_pair(-1, -1);
+
+	if (col + 1 < 8 && board[row][col+1] == oppPiece) {
+		if (oppPiece == 'p' && _blackPawns[col + 1] == _moveCounter - 1) {
+			return std::make_pair(2, col + 1);
+		}
+		if (oppPiece == 'P' && _whitePawns[col + 1] == _moveCounter - 1) {
+			return std::make_pair(5, col + 1);
+		}
+	}
+	if (col - 1 >= 0 && board[row][col-1] == oppPiece) {
+		if (oppPiece == 'p' && _blackPawns[col - 1] == _moveCounter - 1) {
+			return std::make_pair(2, col - 1);
+		}
+		if (oppPiece == 'P' && _whitePawns[col - 1] == _moveCounter - 1) {
+			return std::make_pair(5, col - 1);
+		}
+	}
+	return std::make_pair(-1, -1);
+}
+
 
 
 std::pair<pos, pos> Game::parseMove(std::string move) {

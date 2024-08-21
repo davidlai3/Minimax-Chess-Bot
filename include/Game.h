@@ -25,6 +25,7 @@ class Game {
 		char board[BOARD_ROWS][BOARD_COLS];
 		Piece::Color _colorToMove = Piece::WHITE;
 		Piece::Color _playerColor;
+		int _moveCounter = 0;
 
 		pos _whiteKing;
 		pos _blackKing;
@@ -42,6 +43,11 @@ class Game {
 
 		bool checkCastleKingside(Piece::Color kingColor);
 		bool checkCastleQueenside(Piece::Color kingColor);
+
+		int _blackPawns[8] = {};
+		int _whitePawns[8] = {};
+		void checkPawnMove(pos src, pos dst);
+		pos checkEnPassant(int row, int col);
 
 		std::pair<pos, pos> parseMove(std::string move);
 
