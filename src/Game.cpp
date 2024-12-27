@@ -67,7 +67,7 @@ void Game::player_move() {
 		color_to_move = (color_to_move == Piece::WHITE ? Piece::BLACK : Piece::WHITE);
 
 		if (board[dst_row][dst_col]->get_type() == Piece::KING) {
-			if (board[dst_row][dst_row]->get_color() == Piece::WHITE) {
+			if (board[dst_row][dst_col]->get_color() == Piece::WHITE) {
 				white_king = std::make_pair(dst_row, dst_col);
 			}
 			else {
@@ -119,34 +119,36 @@ void Game::make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::
 		if (dst_row == 0 || dst_row == 7) promote = true;
 	}
 	
+	// std::cout << "testing print before the anonymous function" << std::endl;
+	// print_board();
 	auto move = [&](int src_r, int src_c, int dst_r, int dst_c) {
-		printf("src_r: %d, src_c: %d, dst_r: %d, dst_c: %d\n", src_r, src_c, dst_r, dst_c);
+		//printf("src_r: %d, src_c: %d, dst_r: %d, dst_c: %d\n", src_r, src_c, dst_r, dst_c);
 		if (board[dst_r][dst_c] != nullptr) {
 			delete board[dst_r][dst_c];
 			board[dst_r][dst_c] = nullptr;
 		}
 		else {
-			printf("Double free!\n");
+			//printf("Double free!\n");
 		}
-		printf("1\n");
+		//printf("1\n");
 		board[dst_r][dst_c] = board[src_r][src_c];
-		printf("2\n");
+		//printf("2\n");
 		board[dst_r][dst_c]->set_pos(dst_r, dst_c);
-		printf("3\n");
+		//printf("3\n");
 		board[src_r][src_c] = new Piece(Piece::EMPTY, Piece::NONE, src_r, src_c);
-		printf("4\n");
+		//printf("4\n");
 	};
 
 	move(src_row, src_col, dst_row, dst_col);
 
 	if (castle) {
-		printf("Castling!\n");
+		//printf("Castling!\n");
 		// Queenside castle
 		if (dst_col < src_col) move(src_row, 0, dst_row, 3);
 		// Kingside castle
 		else {
-			printf("Doing kingside castle\n");
-			print_board();
+			//printf("Doing kingside castle\n");
+			//print_board();
 			move(src_row, 7, dst_row, 5);
 		}
 	}
@@ -159,11 +161,12 @@ void Game::make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::
 		board[dst_row][dst_col]->~Piece();
 		board[dst_row][dst_col] = new Queen(color_to_move, dst_row, dst_col);
 	}
-	printf("Move made\n");
+	//printf("Move made\n");
 }
 
 // Check if potential move is valid
 bool Game::validate_move(int src_row, int src_col, int dst_row, int dst_col, Piece::Type prom) {
+	
 	// Bounds check
 	if (src_row < 0 || src_row >= 8 || src_col < 0 || src_col >= 8) return false;
 	if (dst_row < 0 || dst_row >= 8 || dst_col < 0 || dst_col >= 8) return false;
@@ -173,9 +176,12 @@ bool Game::validate_move(int src_row, int src_col, int dst_row, int dst_col, Pie
 	if (board[src_row][src_col]->get_color() != color_to_move) return false;
 	std::cout << "Source is valid" << std::endl;
 
+	std::cout << "Piece Type: " << board[src_row][src_col]->get_type() << std::endl;
+
 	// Add more possible valid moves
 	ull moves = board[src_row][src_col]->get_legal_moves(board);
 	if (board[src_row][src_col]->get_type() == Piece::KING) {
+		// std::cout << "about to check castle" << std::endl;
 		moves |= check_castle(board[src_row][src_col]->get_color());
 	}
 	if (board[src_row][src_col]->get_type() == Piece::PAWN) {
@@ -219,8 +225,14 @@ ull Game::check_castle(Piece::Color king_color) {
 		if (!((Rook*) board[row][0])->moved) {
 			// check if the path is clear
 			for (int i = 1; i <= 3; i++) {
-				if (board[row][i]->get_type() != Piece::EMPTY) queen_side = false;
-				if (check_pos_under_attack(row, i, opp)) queen_side = false;
+				if (board[row][i]->get_type() != Piece::EMPTY) {
+					queen_side = false;
+					printf("row %d col %d occupied\n", row, i);
+				}
+				if (check_pos_under_attack(row, i, opp)){
+					queen_side = false;
+					printf("row %d col %d occupied\n", row, i);
+				}
 			}
 		}
 	}
@@ -234,6 +246,8 @@ ull Game::check_castle(Piece::Color king_color) {
 	}
 	if (queen_side) mask |= (1ULL << Utils::MSK(row, 2));
 	if (king_side) mask |= (1ULL << Utils::MSK(row, 6));
+	std::cout << "Checking mask before returning check castle" << std::endl;
+	std::cout << mask << std::endl;
 	return mask;
 }
 
@@ -279,7 +293,7 @@ bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
 	Piece* tmp2;
 	if (castle) {
 		if (dst_col < src_col) tmp2 = move_tmp(src_row, 0, dst_row, 3); // Queenside
-		else move_tmp(src_row, 7, dst_row, 5);							// Kingside
+		else tmp2 = move_tmp(src_row, 7, dst_row, 5);							// Kingside
 	}
 	if (en_passant) {
 		tmp2 = board[src_row][dst_col];
@@ -291,16 +305,29 @@ bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
 	}
 	
 
+	// std::cout << board[7][6] << std::endl;
+
 	Piece::Color color = board[src_row][src_col]->get_color();
 	Piece* tmp = move_tmp(src_row, src_col, dst_row, dst_col);
 	bool res = true;
+
+	// std::cout << tmp << std::endl;
+
+	// std::cout << "WE SHOULD SEE FULLY CASTLED POSTION" << std::endl;
+	// print_board();
+
 	if (color == Piece::WHITE) {
 		if (check_pos_under_attack(white_king.first, white_king.second, Piece::BLACK)) res = false;
 	}
 	else if (color == Piece::BLACK) {
 		if (check_pos_under_attack(black_king.first, black_king.second, Piece::WHITE)) res = false;
 	}
+
+
 	unmove_tmp(src_row, src_col, dst_row, dst_col, tmp);
+
+	//std::cout << "WE SHOULD SEE KING IN POS BUT NOT ROOK " << std::endl;
+	//print_board();
 
 	
 	if (promote) {
