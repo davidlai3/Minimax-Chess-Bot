@@ -40,6 +40,7 @@ class Piece {
 		virtual ull get_legal_moves(Piece* board[8][8], ull mask = 0) const;
 
 		// Destructor
+		virtual void destroy();
 		virtual ~Piece();
 };
 

@@ -33,4 +33,7 @@ ull Piece::get_legal_moves(Piece* board[8][8], ull mask) const {
 }
 
 // Destructor
+void Piece::destroy() {
+	delete this;
+}
 Piece::~Piece() {}

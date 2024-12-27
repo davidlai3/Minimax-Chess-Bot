@@ -8,8 +8,8 @@ ull Bishop::get_legal_moves(Piece* board[8][8], ull mask) const {
 	int cur_x = get_pos().first;
 	int cur_y = get_pos().second;
 
-	int dx[4] = {1, -1, -1, -1};
-	int dy[4] = {1, 1, 1, -1};
+	int dx[4] = {1, -1, 1, -1};
+	int dy[4] = {1, 1, -1, -1};
 
 	for (int i = 0; i < 4; i++) {
 		int cpy_x = cur_x, cpy_y = cur_y;

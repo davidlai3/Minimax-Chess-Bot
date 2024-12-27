@@ -14,10 +14,10 @@
 // Row 8: White (uppercase)
 Game::Game(Piece::Color player_color) {
 	Game::player_color = player_color;
+
 	for (int i = 0; i < 2; i++) {
 		int row = (i == 0 ? 0 : 7);
 		Piece::Color side = (i == 0 ? Piece::BLACK : Piece::WHITE);
-
 		for (int j = 0; j < 8; j++) {
 			if (j == 0 || j == 7) board[row][j] = new Rook(side, row, j);
 			if (j == 1 || j == 6) board[row][j] = new Knight(side, row, j);
@@ -40,7 +40,7 @@ Game::Game(Piece::Color player_color) {
 Game::~Game() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			board[i][j]->~Piece();
+			delete board[i][j];
 		}
 	}
 }
@@ -62,6 +62,7 @@ void Game::player_move() {
 	// Update new values
 	else {
 		make_move(src_row, src_col, dst_row, dst_col, prom);
+		std::cout << "move successful" << std::endl;
 		move_counter++;
 		color_to_move = (color_to_move == Piece::WHITE ? Piece::BLACK : Piece::WHITE);
 
@@ -119,19 +120,35 @@ void Game::make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::
 	}
 	
 	auto move = [&](int src_r, int src_c, int dst_r, int dst_c) {
-		board[dst_r][dst_c]->~Piece();
+		printf("src_r: %d, src_c: %d, dst_r: %d, dst_c: %d\n", src_r, src_c, dst_r, dst_c);
+		if (board[dst_r][dst_c] != nullptr) {
+			delete board[dst_r][dst_c];
+			board[dst_r][dst_c] = nullptr;
+		}
+		else {
+			printf("Double free!\n");
+		}
+		printf("1\n");
 		board[dst_r][dst_c] = board[src_r][src_c];
+		printf("2\n");
 		board[dst_r][dst_c]->set_pos(dst_r, dst_c);
+		printf("3\n");
 		board[src_r][src_c] = new Piece(Piece::EMPTY, Piece::NONE, src_r, src_c);
+		printf("4\n");
 	};
 
 	move(src_row, src_col, dst_row, dst_col);
 
 	if (castle) {
+		printf("Castling!\n");
 		// Queenside castle
 		if (dst_col < src_col) move(src_row, 0, dst_row, 3);
 		// Kingside castle
-		else move(src_row, 7, dst_row, 5);
+		else {
+			printf("Doing kingside castle\n");
+			print_board();
+			move(src_row, 7, dst_row, 5);
+		}
 	}
 	if (en_passant) {
 		board[src_row][dst_col]->~Piece();
@@ -142,6 +159,7 @@ void Game::make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::
 		board[dst_row][dst_col]->~Piece();
 		board[dst_row][dst_col] = new Queen(color_to_move, dst_row, dst_col);
 	}
+	printf("Move made\n");
 }
 
 // Check if potential move is valid
@@ -149,9 +167,11 @@ bool Game::validate_move(int src_row, int src_col, int dst_row, int dst_col, Pie
 	// Bounds check
 	if (src_row < 0 || src_row >= 8 || src_col < 0 || src_col >= 8) return false;
 	if (dst_row < 0 || dst_row >= 8 || dst_col < 0 || dst_col >= 8) return false;
+	std::cout << "Not out of bounds" << std::endl;
 
 	// Source check
 	if (board[src_row][src_col]->get_color() != color_to_move) return false;
+	std::cout << "Source is valid" << std::endl;
 
 	// Add more possible valid moves
 	ull moves = board[src_row][src_col]->get_legal_moves(board);
@@ -168,13 +188,16 @@ bool Game::validate_move(int src_row, int src_col, int dst_row, int dst_col, Pie
 			if (prom == Piece::EMPTY) return false;
 		}
 	}
+	std::cout << "Promotion checked" << std::endl;
 
 	// Check if destination is within set of valid
 	int rep = Utils::MSK(dst_row, dst_col);
 	if (!(moves & (1ULL << rep))) return false;
+	std::cout << "Valid destination" << std::endl;
 
 	// Check if move leads to check
 	if (!check_move(src_row, src_col, dst_row, dst_col)) return false;
+	std::cout << "Does not create check" << std::endl;
 
 	return true;
 }
@@ -245,7 +268,7 @@ ull Game::check_en_passant(int row, int col) {
 
 // Check if move leads to check
 bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
-	/*
+	
 	bool castle = false, en_passant = false, promote = false;
 	Piece::Type type = board[src_row][src_col]->get_type();
 	if (type == Piece::KING && abs(src_col - dst_col) == 2) castle = true;
@@ -266,7 +289,7 @@ bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
 		tmp2 = board[dst_row][dst_col];
 		board[dst_row][dst_col] = new Queen(color_to_move, dst_row, dst_col);
 	}
-	*/
+	
 
 	Piece::Color color = board[src_row][src_col]->get_color();
 	Piece* tmp = move_tmp(src_row, src_col, dst_row, dst_col);
@@ -279,7 +302,7 @@ bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
 	}
 	unmove_tmp(src_row, src_col, dst_row, dst_col, tmp);
 
-	/*
+	
 	if (promote) {
 		board[dst_row][dst_col]->~Piece();
 		board[dst_row][dst_col] = tmp2;
@@ -292,7 +315,6 @@ bool Game::check_move(int src_row, int src_col, int dst_row, int dst_col) {
 		if (dst_col < src_col) unmove_tmp(src_row, 0, dst_row, 3, tmp2);
 		else unmove_tmp(src_row, 7, dst_row, 5, tmp2);
 	}
-	*/
 
 	return res;
 }
@@ -319,7 +341,11 @@ Piece* Game::move_tmp(int src_row, int src_col, int dst_row, int dst_col) {
 }
 
 void Game::unmove_tmp(int src_row, int src_col, int dst_row, int dst_col, Piece* tmp) {
-	board[src_row][src_col]->~Piece();
+	if (board[src_row][src_col] != nullptr) {
+		delete board[src_row][src_col]; 
+		board[src_row][src_col] = nullptr;
+	}
+
 	board[src_row][src_col] = board[dst_row][dst_col];
 	board[src_row][src_col]->set_pos(src_row, src_col);
 	board[dst_row][dst_col] = tmp;
