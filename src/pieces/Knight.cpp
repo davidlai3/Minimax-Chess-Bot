@@ -1,0 +1,26 @@
+#include "../../include/pieces/Knight.h"
+
+Knight::Knight(Color color, int x, int y) 
+	: Piece(KNIGHT, color, x, y) {}
+
+ull Knight::get_legal_moves(Piece* board[8][8], ull mask) const {
+	ull moves = 0;
+	int cur_x = get_pos().first;
+	int cur_y = get_pos().second;
+
+	int dx[8] = {1, -1, 1, -1, 2, -2, 2, -2};
+	int dy[8] = {2, 2, -2, -2, 1, 1, -1, -1};
+
+	for (int i = 0; i < 8; i++) {
+		bool valid_x = cur_x + dx[i] >= 0 && cur_x + dx[i] < 8;
+		bool valid_y = cur_y + dy[i] >= 0 && cur_y + dy[i] < 8;
+		if (!(valid_x && valid_y)) continue;
+
+		// Can move as long as it's not the same color
+		if (board[cur_x + dx[i]][cur_y + dy[i]]->get_color() != get_color()) {
+			moves |= 1ULL << Utils::MSK(cur_x + dx[i], cur_y + dy[i]);
+		}
+	}
+
+	return moves;
+}

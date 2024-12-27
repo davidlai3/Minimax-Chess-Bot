@@ -3,53 +3,49 @@
 
 #include <string>
 #include "Piece.h"
-#define BOARD_ROWS 8
-#define BOARD_COLS 8
-
 
 class Game {
 	public:
 
-		Game(Piece::Color playerColor);
+		// Constructor
+		Game(Piece::Color player_color);
+		// Destructor
 		~Game();
 
-		bool playerMove();
-		bool makeMove(pos srcPos, pos dstPos);
-		std::set<pos> getFilteredMoves(int row, int col);
-		bool isCheckmate();
-		bool isStalemate();
-		void printBoard(bool invert=false);
+		enum State {
+			ONGOING,
+			CHECKMATE,
+			STALEMATE
+		};
 
+		void player_move();
+		State check_endstate(Piece::Color color);
+		void print_board(bool invert=false);
+		Piece::Color get_color_to_move() const;
 
 	private:
-		char board[BOARD_ROWS][BOARD_COLS];
-		Piece::Color _colorToMove = Piece::WHITE;
-		Piece::Color _playerColor;
-		int _moveCounter = 0;
+		Piece* board[8][8];
+		Piece::Color color_to_move = Piece::WHITE;
+		Piece::Color player_color;
+		
+		pos white_king = std::make_pair(7, 4);
+		pos black_king = std::make_pair(0, 4);
 
-		pos _whiteKing;
-		pos _blackKing;
+		int move_counter = 0;
 
-		bool _whiteKingMoved;
-		bool _whiteKingsideRookMoved;
-		bool _whiteQueensideRookMoved;
+		void parse_move(std::string move, int &src_row, int &src_col, int &dst_row, int &dst_col, Piece::Type &prom);
 
-		bool _blackKingMoved;
-		bool _blackKingsideRookMoved;
-		bool _blackQueensideRookMoved;
+		void make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::Type prom);
+		bool validate_move(int src_row, int src_col, int dst_row, int dst_col, Piece::Type prom);
 
-		bool checkKingUnderAttack(Piece::Color king);
-		bool checkPosUnderAttack(pos position, Piece::Color pieceColor);
+		ull check_castle(Piece::Color king_color);
+		ull check_en_passant(int row, int col);
 
-		bool checkCastleKingside(Piece::Color kingColor);
-		bool checkCastleQueenside(Piece::Color kingColor);
+		bool check_move(int src_row, int src_col, int dst_row, int dst_col);
+		bool check_pos_under_attack(int row, int col, Piece::Color pieceColor);
+		Piece* move_tmp(int src_row, int src_col, int dst_row, int dst_col);
+		void unmove_tmp(int src_row, int src_col, int dst_row, int dst_col, Piece* tmp);
 
-		int _blackPawns[8] = {};
-		int _whitePawns[8] = {};
-		void checkPawnMove(pos src, pos dst);
-		pos checkEnPassant(int row, int col);
-
-		std::pair<pos, pos> parseMove(std::string move);
 
 };
 
