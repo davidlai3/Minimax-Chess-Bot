@@ -18,6 +18,9 @@ class Game {
 			STALEMATE
 		};
 
+		bool forfeit_white = false;
+		bool forfeit_black = false;
+
 		void player_move();
 		State check_endstate(Piece::Color color);
 		void print_board(bool invert=false);
