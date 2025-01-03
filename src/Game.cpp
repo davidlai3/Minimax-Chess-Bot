@@ -7,12 +7,13 @@
 #include "../include/Game.h"
 
 #include <iostream>
+#include <fstream>
 
 /* Public functions */
 
 // Row 0: Black (lowercase)
 // Row 8: White (uppercase)
-Game::Game(Piece::Color player_color) {
+Game::Game(Piece::Color player_color, std::string init_file) {
 	Game::player_color = player_color;
 
 	for (int i = 0; i < 2; i++) {
@@ -35,6 +36,19 @@ Game::Game(Piece::Color player_color) {
 			board[i][j] = new Piece(Piece::EMPTY, Piece::NONE, i, j);
 		}
 	}
+
+	if (init_file == "") return;
+
+	std::ifstream file(init_file);
+    if (!file.is_open()) {
+        std::cerr << "ERROR: Could not open file." << std::endl;
+    }
+    std::string move;
+    while (std::getline(file, move)) {
+		player_move(move);
+    }
+
+    file.close();
 }
 
 Game::~Game() {
@@ -46,9 +60,12 @@ Game::~Game() {
 }
 
 // Query player for move and update board
-void Game::player_move() {
-	std::cout << "Enter move: ";
-	std::string s; std::cin >> s;
+void Game::player_move(std::string move) {
+	std::string s; 
+	if (move == "") {
+		std::cout << "Enter move: "; std::cin >> s;
+	}
+	else s = move;
 
 	if (s == "exit") {
 		if (color_to_move == Piece::WHITE) forfeit_white = true;
@@ -96,6 +113,11 @@ void Game::player_move() {
 
 // Parses move string
 void Game::parse_move(std::string move, int &src_row, int &src_col, int &dst_row, int &dst_col, Piece::Type &prom) {
+	if (move.length() < 4) {
+		std::cerr << "ERROR: Invalid move string." << std::endl;
+		src_row = -1; src_col = -1; dst_row = -1; dst_col = -1;
+		return;
+	}
 	src_row = 8 - (move[1] - '0');
 	src_col = move[0] - 'a';
 	dst_row = 8 - (move[3] - '0');
@@ -131,7 +153,7 @@ void Game::make_move(int src_row, int src_col, int dst_row, int dst_col, Piece::
 			board[dst_r][dst_c] = nullptr;
 		}
 		else {
-			std::cout << "ERROR: Double free" << std::endl;
+			std::cerr << "ERROR: Double free." << std::endl;
 		}
 		board[dst_r][dst_c] = board[src_r][src_c];
 		board[dst_r][dst_c]->set_pos(dst_r, dst_c);

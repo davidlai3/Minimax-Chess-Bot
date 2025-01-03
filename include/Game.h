@@ -8,7 +8,7 @@ class Game {
 	public:
 
 		// Constructor
-		Game(Piece::Color player_color);
+		Game(Piece::Color player_color, std::string file = "");
 		// Destructor
 		~Game();
 
@@ -21,7 +21,7 @@ class Game {
 		bool forfeit_white = false;
 		bool forfeit_black = false;
 
-		void player_move();
+		void player_move(std::string move = "");
 		State check_endstate(Piece::Color color);
 		void print_board(bool invert=false);
 		Piece::Color get_color_to_move() const;
