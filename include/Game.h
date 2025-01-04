@@ -11,6 +11,8 @@ class Game {
 		Game(Piece::Color player_color, std::string file = "");
 		// Destructor
 		~Game();
+		// Copy Constructor
+		Game( const Game& rhs );
 
 		enum State {
 			ONGOING,

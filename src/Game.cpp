@@ -51,6 +51,59 @@ Game::Game(Piece::Color player_color, std::string init_file) {
     file.close();
 }
 
+// Copy Constructor
+Game::Game( const Game& rhs ){
+	// copy over all the variables
+	forfeit_black = rhs.forfeit_black;
+	forfeit_white = rhs.forfeit_white;
+
+	move_counter = rhs.move_counter;
+	color_to_move = rhs.color_to_move;
+	player_color = rhs.player_color;
+
+	white_king = rhs.white_king;
+	black_king = rhs.black_king;
+
+	for( int row = 0; row < 8; ++row ){
+		for( int col = 0; col < 8; ++col ){
+
+			Piece::Type piece_type = rhs.board[row][col]->get_type();
+			Piece::Color piece_color =  rhs.board[row][col]->get_color();
+
+			switch (rhs.board[row][col]->get_type()){
+
+				case Piece::EMPTY:
+					board[row][col] = new Piece(piece_type, piece_color, row, col);
+					break;
+				case Piece::PAWN:
+					board[row][col] = new Pawn(piece_color, row, col);
+					// set the two move turn
+					((Pawn*) board[row][col])->two_move_turn = ((Pawn*) rhs.board[row][col])->two_move_turn;
+					break;
+				case Piece::KNIGHT:
+					board[row][col] = new Knight(piece_color, row, col);
+					break;
+				case Piece::BISHOP:
+					board[row][col] = new Bishop(piece_color, row, col);
+					break;
+				case Piece::ROOK:
+					board[row][col] = new Rook(piece_color, row, col);
+					((Rook*) board[row][col])->moved = ((Rook*) rhs.board[row][col])->moved;
+					break;
+				case Piece::QUEEN:
+					board[row][col] = new Queen(piece_color, row, col);
+					break;
+				case Piece::KING:
+					board[row][col] = new King(piece_color, row, col);
+					((King*) board[row][col])->moved = ((King*) rhs.board[row][col])->moved;
+			}
+		}
+		
+	}
+
+
+}
+
 Game::~Game() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
