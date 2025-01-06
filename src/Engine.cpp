@@ -1,10 +1,13 @@
 #include "Engine.h"
 #include <utility>
 #include <climits>
+#include <sstream>
+#include <iostream>
 // #define si std::pair<std::string, int>
 
-Engine::Engine( const int& depth, const Piece::Color& engine_color, Game* current_game_ptr  ){
+Engine::Engine( const int& depth, const Piece::Color engine_color, Game* current_game_ptr  ){
     this->depth = depth;
+
 
     if( engine_color == Piece::WHITE ){
         this->engine_color = engine_color;
@@ -15,6 +18,7 @@ Engine::Engine( const int& depth, const Piece::Color& engine_color, Game* curren
     }
 
     this->game = (*current_game_ptr);
+    move_history = { game };
 
 }
 
@@ -41,14 +45,32 @@ int Engine::heuristic(){
 
 }
 
-void Engine::update_game( const std::string& latest_player_move ){
-    Game.player_move(latest_player_move);
+void Engine::update_game( const Game& most_recent_game ){
+    game = most_recent_game;
 }
 
 std::string Engine::best_engine_move(){
-
     std::pair<std::string, int> result = minimax(depth, true);
     return result.first;
+
+}
+
+std::vector<std::string> Engine::all_legal_moves( ull moves, int src_row, int src_col ){
+    std::vector< std::string > result;
+
+    for( int i = 0; i < 64; i++ ){
+        if ( moves & 1<<i ){
+            std::pair<int,int> coord = Utils::UNMSK( i );
+
+            // concatenate via string stream
+            std::stringstream move;
+            move << (char) ('a' + src_row) <<  (char) ('1' + src_col) << (char)('a' + coord.first) << (char) ('1' + coord.second);
+            result.push_back( move.str() );
+
+        }
+
+    }    
+    return result;
 
 }
 
@@ -63,26 +85,35 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
 
     // Check base cases
     if( check_engine_win == Game::CHECKMATE ){
-        return INT_MAX; 
+    std::cout << "Caught5" << std::endl;
+
+        return {"", INT_MAX}; 
     }
     if( check_player_win == Game::CHECKMATE ){
-        return INT_MIN;
+    std::cout << "Caught5" << std::endl;
+
+        return {"", INT_MIN};
     }
     if( check_engine_win == Game::STALEMATE ){
-        return 0;
+    std::cout << "Caught5" << std::endl;
+
+        return {"", 0};
     }
     if( curr_depth == 0 ){
-        return heuristic();
+    std::cout << "Caught5" << std::endl;
+
+        return {"", heuristic()};
     }
 
 
     std::vector< std::string > legal_moves;
+
     for( int row=0; row < 8; row++ ){
         for( int col=0; col < 8; col++ ){
 
             if( game.board[row][col]->get_color() == curr_player_color ){
 
-                ull piece_moves_ull = game.board[row][col]->get_legal_moves();
+                ull piece_moves_ull = game.board[row][col]->get_legal_moves( game.board );
                 std::vector<std::string> piece_moves_vec = all_legal_moves( piece_moves_ull, row, col );
                 legal_moves.insert( legal_moves.end(), piece_moves_vec.begin(), piece_moves_vec.end() ); 
 
@@ -92,24 +123,86 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
     }
 
 
-    // if( maximizing_player ){
+    std::pair<std::string, int> ret_val;
+
+
+    if( maximizing_player ){
+
+        ret_val.second = INT_MIN;
         
-    //     for( const std::string& move : legal_moves ){
+        for( const std::string& move : legal_moves ){
 
-    //         Game.player_move(move);
+            // make the move
+            game.player_move(move);
 
-    //         // Game.unmove_move(move)
-
-    //     }
-
-
-
-    // }else{
+            // store in move history for future reference
+            move_history.push_back( game );
 
 
 
-    // }
+            std::cout << "\n\n\n\n" << std::endl;
 
+            std::cout << "Maximizing Player" << std::endl;
+            game.print_board();
+
+            std::cout << "\n\n\n\n" << std::endl;
+
+
+
+
+            std::pair<std::string, int> result = minimax(curr_depth-1, !maximizing_player);
+            if( result.second > ret_val.second ){
+                ret_val.first = move;
+                ret_val.second = result.second;
+            }
+            
+            // unmove the move
+            move_history.pop_back();
+            game = move_history.back();
+
+        }
+
+
+
+    }else{
+
+        ret_val.second = INT_MAX;
+
+        for( const std::string& move : legal_moves ){
+            
+
+            // make move
+            game.player_move( move );
+            // store move history
+            move_history.push_back(game);
+
+            std::cout << "\n\n\n\n" << std::endl;
+
+
+            std::cout << "Minimizing Player" << std::endl;
+            game.print_board();
+
+            std::cout << "\n\n\n\n" << std::endl;
+
+            
+
+            std::pair<std::string, int> result = minimax( curr_depth-1, !maximizing_player);
+            if( result.second < ret_val.second ){
+                ret_val.first = move;
+                ret_val.second = result.second;
+            }
+
+            move_history.pop_back();
+            game = move_history.back();
+
+        }
+
+    }
+
+    std::cout << "Caught5" << std::endl;
+
+
+    return ret_val;
 
 
 

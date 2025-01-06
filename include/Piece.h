@@ -13,9 +13,9 @@ class Piece {
 		enum Type { EMPTY, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 		enum Color { WHITE, BLACK, NONE };
 		static constexpr char type_char[3][7] = {
-			'.', 'P', 'N', 'B', 'R', 'Q', 'K',
-			'.', 'p', 'n', 'b', 'r', 'q', 'k',
-			'.' 
+			{'.', 'P', 'N', 'B', 'R', 'Q', 'K'},
+			{'.', 'p', 'n', 'b', 'r', 'q', 'k'},
+			{'.'}
 		};
 
 	private:

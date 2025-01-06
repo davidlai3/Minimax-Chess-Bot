@@ -8,7 +8,7 @@ class Game {
 	public:
 
 		// Constructor
-		Game(Piece::Color player_color, std::string file = "");
+		Game(Piece::Color player_color = Piece::WHITE , std::string file = "");
 		// Destructor
 		~Game();
 		// Copy Constructor
@@ -27,9 +27,12 @@ class Game {
 		State check_endstate(Piece::Color color);
 		void print_board(bool invert=false);
 		Piece::Color get_color_to_move() const;
+		Game& operator=(const Game& rhs);
+
+		Piece* board[8][8];
+
 
 	private:
-		Piece* board[8][8];
 		Piece::Color color_to_move = Piece::WHITE;
 		Piece::Color player_color;
 		

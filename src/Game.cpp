@@ -105,7 +105,11 @@ Game::Game( const Game& rhs ){
 }
 
 // Copy Assignment Operator
-Game& operator=(const Game& rhs){
+Game& Game::operator=(const Game& rhs){
+
+	if( this == &rhs){
+		return *this;
+	}
 
 	// copy over all the variables
 	forfeit_black = rhs.forfeit_black;
@@ -117,6 +121,7 @@ Game& operator=(const Game& rhs){
 
 	white_king = rhs.white_king;
 	black_king = rhs.black_king;
+
 
 	for( int row = 0; row < 8; ++row ){
 		for( int col = 0; col < 8; ++col ){
@@ -155,6 +160,7 @@ Game& operator=(const Game& rhs){
 		
 	}
 
+	return *this;
 
 }
 
