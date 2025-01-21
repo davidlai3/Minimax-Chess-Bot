@@ -48,7 +48,9 @@ int main(int argc, char** argv) {
 		chess_engine.update_game( *game );
 
 		// send to engine to make move
-		game->player_move( chess_engine.best_engine_move() );
+		string engine_move = chess_engine.best_engine_move();
+		std::cout << "Engine plays: " << engine_move << std::endl;
+		game->player_move( engine_move );
 		
 
 		cur_state = game->check_endstate(game->get_color_to_move()) == Game::ONGOING;

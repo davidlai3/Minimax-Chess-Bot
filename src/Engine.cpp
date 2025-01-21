@@ -84,23 +84,19 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
 
     // Check base cases
     if( check_engine_win == Game::CHECKMATE ){
-    std::cout << "Caught5" << std::endl;
-
+    std::cout << "Caught2" << std::endl;
         return {"", INT_MAX}; 
     }
     if( check_player_win == Game::CHECKMATE ){
-    std::cout << "Caught5" << std::endl;
-
+    std::cout << "Caught3" << std::endl;
         return {"", INT_MIN};
     }
     if( check_engine_win == Game::STALEMATE ){
-    std::cout << "Caught5" << std::endl;
-
+    std::cout << "Caught4" << std::endl;
         return {"", 0};
     }
     if( curr_depth == 0 ){
     std::cout << "Caught5" << std::endl;
-
         return {"", heuristic()};
     }
 
@@ -138,13 +134,8 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
 
 
 
-            std::cout << "\n\n\n\n" << std::endl;
-
             std::cout << "Maximizing Player" << std::endl;
             game.print_board();
-
-            std::cout << "\n\n\n\n" << std::endl;
-
 
 
 
@@ -174,15 +165,10 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
             // store move history
             move_history.push_back(game);
 
-            std::cout << "\n\n\n\n" << std::endl;
-
 
             std::cout << "Minimizing Player" << std::endl;
             game.print_board();
 
-            std::cout << "\n\n\n\n" << std::endl;
-
-            
 
             std::pair<std::string, int> result = minimax( curr_depth-1, !maximizing_player);
             if( result.second < ret_val.second ){
@@ -196,8 +182,6 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
         }
 
     }
-
-    std::cout << "Caught5" << std::endl;
 
 
     return ret_val;
