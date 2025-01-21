@@ -1,5 +1,6 @@
 # Remove .o
-.o
-.out
+*.o
+*.out
+obj/
 
 

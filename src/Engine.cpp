@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "../include/Engine.h"
 #include <utility>
 #include <climits>
 #include <sstream>
@@ -30,7 +30,6 @@ int Engine::heuristic(){
         for( int col=0; col < 8; col ++ ){
 
             int piece_index = game.board[row][col]->get_type();
-
 
             if( game.board[row][col]->get_color() == engine_color ){
                 score += piece_value[ piece_index ];
@@ -64,7 +63,7 @@ std::vector<std::string> Engine::all_legal_moves( ull moves, int src_row, int sr
 
             // concatenate via string stream
             std::stringstream move;
-            move << (char) ('a' + src_row) <<  (char) ('1' + src_col) << (char)('a' + coord.first) << (char) ('1' + coord.second);
+            move << (char) ('a' + src_col) <<  (char) ('8' - src_row) << (char)('a' + coord.second) << (char) ('8' - coord.first);
             result.push_back( move.str() );
 
         }
@@ -121,7 +120,6 @@ std::pair<std::string, int> Engine::minimax( const int& curr_depth, const bool& 
 
         }
     }
-
 
     std::pair<std::string, int> ret_val;
 

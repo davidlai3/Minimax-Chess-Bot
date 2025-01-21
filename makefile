@@ -14,18 +14,20 @@ PIECE_SRCS = $(SRC_DIR)/pieces/Bishop.cpp $(SRC_DIR)/pieces/King.cpp \
 BASE_PIECE_SRC = $(SRC_DIR)/Piece.cpp
 UTILS_SRC = $(SRC_DIR)/Utils.cpp
 GAME_SRC = $(SRC_DIR)/Game.cpp
+ENGINE_SRC = $(SRC_DIR)/Engine.cpp
 DRIVER_SRC = $(SRC_DIR)/Driver.cpp
 
-SRCS = $(PIECE_SRCS) $(BASE_PIECE_SRC) $(UTILS_SRC) $(GAME_SRC) $(DRIVER_SRC)
+SRCS = $(PIECE_SRCS) $(BASE_PIECE_SRC) $(UTILS_SRC) $(GAME_SRC) $(ENGINE_SRC) $(DRIVER_SRC)
 
 # Object files
 PIECE_OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(PIECE_SRCS))
 BASE_PIECE_OBJ = $(OBJ_DIR)/Piece.o
 UTILS_OBJ = $(OBJ_DIR)/Utils.o
 GAME_OBJ = $(OBJ_DIR)/Game.o
+ENGINE_OBJ = $(OBJ_DIR)/Engine.o
 DRIVER_OBJ = $(OBJ_DIR)/Driver.o
 
-OBJS = $(UTILS_OBJ) $(BASE_PIECE_OBJ) $(PIECE_OBJS) $(GAME_OBJ) $(DRIVER_OBJ)
+OBJS = $(UTILS_OBJ) $(BASE_PIECE_OBJ) $(PIECE_OBJS) $(GAME_OBJ) $(ENGINE_OBJ) $(DRIVER_OBJ)
 
 # Executable
 TARGET = ChessBot
