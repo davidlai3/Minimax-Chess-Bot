@@ -1,6 +1,4 @@
-# Remove .o
 *.o
 *.out
 obj/
-
 
